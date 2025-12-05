@@ -80,6 +80,7 @@ async function main() {
       stdio: "inherit",
       shell: true,
     });
+    await new Promise((r) => setTimeout(r, 1000));
     console.log(chalk.green("Git repository initialized."));
   } catch (err) {
     console.log(chalk.yellow("Git init failed:", err.message));
