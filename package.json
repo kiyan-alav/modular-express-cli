@@ -1,16 +1,25 @@
 {
   "name": "modular-express-cli",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "",
   "main": "index.js",
   "bin": {
     "modular-express-cli": "./index.js"
   },
   "type": "module",
+  "keywords": [
+    "cli",
+    "nodejs",
+    "express js",
+    "modular"
+  ],
   "files": [
     "index.js",
     "template"
   ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "chalk": "^5.6.2",
     "ejs": "^3.1.10",
