@@ -1,10 +1,10 @@
 {
-  "name": "modular-express",
+  "name": "modular-express-cli",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "bin": {
-    "modular-express": "./index.js"
+    "modular-express-cli": "./index.js"
   },
   "type": "module",
   "files": [
