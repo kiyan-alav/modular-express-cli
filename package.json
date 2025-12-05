@@ -1,6 +1,6 @@
 {
   "name": "modular-express-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "license": "MIT",
   "description": "CLI Express Project",
   "main": "index.js",
