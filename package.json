@@ -20,6 +20,10 @@
   "engines": {
     "node": ">=18.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/<username>/modular-express.git"
+  },
   "dependencies": {
     "chalk": "^5.6.2",
     "ejs": "^3.1.10",
