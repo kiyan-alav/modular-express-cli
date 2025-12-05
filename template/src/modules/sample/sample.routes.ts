@@ -5,7 +5,7 @@ const sampleRouter = Router();
 
 sampleRouter.get(
   "/test",
-  sampleController.sampleController
+  sampleController.action
 );
 
 export default sampleRouter;
