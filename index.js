@@ -9,13 +9,97 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const argvName = process.argv[2];
+
+function ensureValidCwd() {
+  try {
+    const cwd = process.cwd();
+    fs.accessSync(cwd, fs.constants.R_OK | fs.constants.W_OK);
+  } catch (err) {
+    console.error("\n❌  Current directory is invalid or inaccessible.");
+    console.error(
+      "➡️  Please navigate to a normal folder and run the CLI again.\n"
+    );
+    process.exit(1);
+  }
+}
+ensureValidCwd();
+
+async function renderTemplates(targetDir, data) {
+  const exts = [".json", ".md", ".js", ".txt"];
+
+  const walk = async (dir) => {
+    const items = await fs.readdir(dir);
+    for (const item of items) {
+      const full = path.join(dir, item);
+      const stat = await fs.stat(full);
+
+      if (stat.isDirectory()) {
+        await walk(full);
+      } else {
+        const ext = path.extname(full);
+        if (exts.includes(ext)) {
+          const content = await fs.readFile(full, "utf8");
+          if (content.includes("<%")) {
+            const rendered = ejs.render(content, data);
+            await fs.writeFile(full, rendered, "utf8");
+          }
+        }
+      }
+    }
+  };
+
+  await walk(targetDir);
+}
+
+function initGit(targetDir) {
+  try {
+    execaCommandSync("git init -b main", {
+      cwd: targetDir,
+      stdio: "inherit",
+      shell: true,
+    });
+    execaCommandSync("git add .", {
+      cwd: targetDir,
+      stdio: "inherit",
+      shell: true,
+    });
+    execaCommandSync('git commit -m "Initial commit"', {
+      cwd: targetDir,
+      stdio: "inherit",
+      shell: true,
+    });
+    console.log(chalk.green("✔ Git initialized and first commit created.\n"));
+  } catch (err) {
+    console.log(chalk.yellow(`⚠ Git setup skipped: ${err.message}\n`));
+  }
+}
+
+function detectPackageManager() {
+  try {
+    execaCommandSync("pnpm --version", { stdio: "ignore" });
+    return "pnpm";
+  } catch {
+    return "npm";
+  }
+}
+
+async function installDependencies(targetDir) {
+  const pkg = detectPackageManager();
+  console.log(chalk.gray(`Installing dependencies using ${pkg}...\n`));
+
+  execaCommandSync(`${pkg} install`, {
+    cwd: targetDir,
+    stdio: "inherit",
+  });
+}
 
 async function main() {
   console.log(chalk.cyan("🛠️  Modular Express CLI"));
+  console.log("");
 
-  let { projectName } = argvName
-    ? { projectName: argvName }
+  const argName = process.argv[2];
+  const { projectName } = argName
+    ? { projectName: argName }
     : await inquirer.prompt([
         {
           name: "projectName",
@@ -35,72 +119,35 @@ async function main() {
         default: false,
       },
     ]);
+
     if (!overwrite) {
       console.log(chalk.yellow("Cancelled."));
       process.exit(1);
     }
+
     await fs.remove(targetDir);
   }
 
   const templateDir = path.join(__dirname, "template");
-
-  console.log(chalk.gray("Copying template..."));
+  console.log(chalk.gray("Copying project template..."));
   await fs.copy(templateDir, targetDir);
 
-  const gitignorePath = path.join(targetDir, "_gitignore");
-  if (fs.existsSync(gitignorePath)) {
-    await fs.rename(gitignorePath, path.join(targetDir, ".gitignore"));
-  }
+  const specialRenames = [
+    ["_gitignore", ".gitignore"],
+    ["_env", ".env"],
+  ];
 
-  const renderExtensions = [".json", ".md", ".js", ".txt"];
-  const walk = async (dir) => {
-    const items = await fs.readdir(dir);
-    for (const item of items) {
-      const full = path.join(dir, item);
-      const stat = await fs.stat(full);
-      if (stat.isDirectory()) {
-        await walk(full);
-      } else {
-        const ext = path.extname(full);
-        if (renderExtensions.includes(ext)) {
-          const content = await fs.readFile(full, "utf8");
-          if (content.includes("<%")) {
-            const rendered = ejs.render(content, { name: projectName });
-            await fs.writeFile(full, rendered, "utf8");
-          }
-        }
-      }
+  for (const [from, to] of specialRenames) {
+    const src = path.join(targetDir, from);
+    const dest = path.join(targetDir, to);
+    if (fs.existsSync(src)) {
+      await fs.rename(src, dest);
     }
-  };
-  await walk(targetDir);
-
-  try {
-    execaCommandSync("git init -b main", {
-      cwd: targetDir,
-      stdio: "inherit",
-      shell: true,
-    });
-    await new Promise((r) => setTimeout(r, 1000));
-    console.log(chalk.green("Git repository initialized."));
-  } catch (err) {
-    console.log(chalk.yellow("Git init failed:", err.message));
   }
 
-  try {
-    execaCommandSync("git add .", {
-      cwd: targetDir,
-      stdio: "inherit",
-      shell: true,
-    });
-    execaCommandSync('git commit -m "Initial commit"', {
-      cwd: targetDir,
-      stdio: "inherit",
-      shell: true,
-    });
-    console.log(chalk.green("Initial commit done."));
-  } catch (err) {
-    console.log(chalk.yellow("Git commit skipped:", err.message));
-  }
+  await renderTemplates(targetDir, { name: projectName });
+
+  initGit(targetDir);
 
   const { install } = await inquirer.prompt([
     {
@@ -112,27 +159,13 @@ async function main() {
   ]);
 
   if (install) {
-    let pkgManager = "npm";
-
-    try {
-      execaCommandSync("pnpm --version", { stdio: "ignore" });
-      pkgManager = "pnpm";
-      console.log(chalk.gray("Detected pnpm"));
-    } catch {
-      console.log(chalk.gray("Using npm (pnpm not found)"));
-    }
-
-    console.log(chalk.gray(`Installing deps with ${pkgManager}...`));
-    execaCommandSync(`${pkgManager} install`, {
-      cwd: targetDir,
-      stdio: "inherit",
-    });
+    await installDependencies(targetDir);
   }
 
-  console.log(chalk.blue("\nAll done! Next steps:\n"));
-  console.log(chalk.white(`  cd ${projectName}`));
-  console.log(chalk.white(`  ${install ? "" : "npm install && "}npm run dev`));
-  console.log(chalk.green("\nHappy coding! 🚀"));
+  console.log(chalk.blue("\nNext steps:\n"));
+  console.log(`  cd ${projectName}`);
+  console.log(`  ${install ? "" : "npm install && "}npm run dev\n`);
+  console.log(chalk.green("🚀 All set! Happy coding!\n"));
 }
 
 main().catch((e) => {

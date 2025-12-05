@@ -1,0 +1,5 @@
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/mongo_url
+ACCESS_TOKEN_KEY=accessTokenSecret
+REFRESH_TOKEN_KEY=refreshTokenSecret
+BASE_URL=http://localhost:5000
