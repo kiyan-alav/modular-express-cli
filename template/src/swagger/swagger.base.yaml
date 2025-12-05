@@ -1,0 +1,11 @@
+openapi: 3.1.0
+info:
+  title: API Documentation
+  version: 1.0.0
+  description: Main API documentation
+servers:
+  - url: http://localhost:5000/api
+    description: Local server
+tags:
+  - name: Sample
+    description: Sample endpoints

@@ -1,0 +1,19 @@
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - message
+        - data
+      properties:
+        success:
+          type: boolean
+          example: false
+        message:
+          type: string
+          example: Something went wrong
+        data:
+          type: "null"
+          nullable: true
+          example: null

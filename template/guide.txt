@@ -1,0 +1,61 @@
+src/
+ ├─ config/
+ │   ├─ db.ts 
+ │   ├─ env.ts
+ │
+ ├─ modules/
+ │   ├─ user/
+ │   │   ├─ user.model.ts
+ │   │   ├─ user.controller.user.ts
+ │   │   ├─ user.controller.admin.ts
+ │   │   ├─ user.controller.core.ts
+ │   │   ├─ user.service.user.ts
+ │   │   ├─ user.service.admin.ts
+ │   │   ├─ user.service.core.ts
+ │   │   ├─ user.routes.user.ts
+ │   │   ├─ user.routes.admin.ts
+ │   │   ├─ user.routes.core.ts
+ │   │   └─ user.validation.ts
+ │   │   └─ user.types.ts
+ │   └─ product/
+ │       ├─ ...
+ │
+ ├─ middlewares/
+ │   ├─ errorHandler.ts
+ │   ├─ validateRequest.ts
+ │   └─ auth.ts
+ │
+ ├─ utils/
+ │   ├─ ApiResponse.ts
+ │   ├─ ApiError.ts
+ │   ├─ catchAsync.ts
+ │   └─ auth.ts
+ │   ├─ pagination.ts
+ │   └─ uploader.ts
+ │
+ │
+ │
+ ├─ swagger/
+ │   ├─ swagger.ts
+ │   ├─ swagger.base.yaml
+ │   │
+ │   │
+ │   ├─ components/ 
+ │   │   ├─ schemas/
+ │   │   │   ├─ auth.schema.yaml
+ │   │   │   ├─ error.schema.yaml
+ │   │   │   ├─ user.schema.yaml
+ │   │   │   └─ product.schema.yaml
+ │   │   │
+ │   │   ├─ responses.yaml
+ │   │   ├─ security.yaml
+ │   │
+ │   ├─ modules/
+ │   │   ├─ auth.module.yaml
+ │   │   ├─ user.module.yaml
+ │   │   ├─ product.module.yaml
+ │   │   └─ ...
+ │   │
+ │
+ ├─ app.ts
+ └─ server.ts

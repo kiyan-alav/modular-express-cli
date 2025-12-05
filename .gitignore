@@ -1,0 +1,64 @@
+# --- Node.js ---
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+# package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# --- Environment Variables ---
+.env
+.env.*
+!.env.example
+
+# --- Logs ---
+logs/
+*.log
+*.log.*
+debug.log
+error.log
+
+# --- Runtime Data ---
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# --- Coverage / Test Output ---
+coverage/
+*.lcov
+
+# --- Build / Dist / Cache ---
+dist/
+build/
+.cache/
+.tmp/
+temp/
+out/
+exports/
+*.tsbuildinfo
+
+# --- OS Files ---
+.DS_Store
+Thumbs.db
+
+# --- IDEs & Editors ---
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# --- MongoDB Dumps ---
+dump/
+*.bson
+# *.json
+
+# --- Optional: TypeScript artifacts ---
+*.js.map
+*.d.ts
+
+# --- Optional: Docker ---
+docker-compose.override.yml
+
