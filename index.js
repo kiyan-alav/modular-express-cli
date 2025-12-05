@@ -9,7 +9,6 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 const argvName = process.argv[2];
 
 async function main() {
@@ -47,6 +46,11 @@ async function main() {
 
   console.log(chalk.gray("Copying template..."));
   await fs.copy(templateDir, targetDir);
+
+  const gitignorePath = path.join(targetDir, "_gitignore");
+  if (fs.existsSync(gitignorePath)) {
+    await fs.rename(gitignorePath, path.join(targetDir, ".gitignore"));
+  }
 
   const renderExtensions = [".json", ".md", ".js", ".txt"];
   const walk = async (dir) => {
